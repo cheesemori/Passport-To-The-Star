@@ -1,33 +1,30 @@
-﻿# The script of the game goes in this file.
-
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
-
-define e = Character("Eileen")
-
-
-# The game starts here.
+﻿define e = Character("Eileen")
 
 label start:
 
-    # Show a background. This uses a placeholder by default, but you can
-    # add a file (named either "bg room.png" or "bg room.jpg") to the
-    # images directory to show it.
+menu mode_select_screen:
 
-    scene bg room
+    "Please select game mode"
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "eileen happy.png" to the images
-    # directory.
+    "Story mode":
+        jump story_mode_screen
 
-    show eileen happy
+    "Infinity mode":
+        jump infinity_mode_screen
 
-    # These display lines of dialogue.
+label story_mode_screen:
+    
+    "This mode is under development"
+    jump start
 
-    e "You've created a new Ren'Py game."
+label infinity_mode_screen:
 
-    e "Once you add a story, pictures, and music, you can release it to the world!"
+    
 
-    # This ends the game.
 
-    return
+
+
+
+
+
+
