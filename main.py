@@ -1,16 +1,16 @@
-import pygame
+import pygame as pg
 import sys
 
-pygame.init()
+pg.init()
 
 game_version = "v0.1"
-screen = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption(f'Passport To The Star {game_version}')
+screen = pg.display.set_mode((1280, 720))
+pg.display.set_caption(f'Passport To The Star {game_version}')
 
 while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.quit()
             sys.exit()
 
 
