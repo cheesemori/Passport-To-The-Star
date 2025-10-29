@@ -1,8 +1,6 @@
 import pygame
 import sys
 
-from matplotlib.pyplot import title
-
 pygame.init()
 
 game_version = "v0.1"
