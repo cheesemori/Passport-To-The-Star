@@ -7,13 +7,13 @@ game_version = "v0.1"
 screen = pygame.display.set_mode((800, 640))
 pygame.display.set_caption(f'Passport To The Star {game_version}')
 
+
 class Image:
-    def __init__(self,path:str,size:tuple[int,int],alpha:int=0):
+    def __init__(self, path: str, size: tuple[int, int], alpha: int = 0):
         self.path = path
         self.size = size
         self.alpha = alpha
         self.image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
-
 
 
 background = Image('image/background.png', (800, 640), 0)
@@ -64,23 +64,26 @@ splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
 title_state = "off"
+button_pressed = ""
 
-start_button_range = ((105,466),(235,534))
-quit_button_range = ((105,556),(228,624))
+start_button_range = ((105, 466), (235, 534))
+quit_button_range = ((105, 556), (228, 624))
 
 start_button = [start_button_normal.image, start_button_hover.image, start_button_pressed.image]
 start_button_index = 0
 
-
-quit_button = [quit_button_normal.image,quit_button_hover.image,quit_button_pressed.image]
+quit_button = [quit_button_normal.image, quit_button_hover.image, quit_button_pressed.image]
 quit_button_index = 0
 
 
 def mouse_in_start_button():
-    return start_button_range[0][0] <= mouse_x <= start_button_range[1][0] and start_button_range[0][1] <= mouse_y <= start_button_range[1][1]
+    return start_button_range[0][0] <= mouse_x <= start_button_range[1][0] and start_button_range[0][1] <= mouse_y <= \
+        start_button_range[1][1]
+
 
 def mouse_in_quit_button():
-    return quit_button_range[0][0] <= mouse_x <= quit_button_range[1][0] and quit_button_range[0][1] <= mouse_y <= quit_button_range[1][1]
+    return quit_button_range[0][0] <= mouse_x <= quit_button_range[1][0] and quit_button_range[0][1] <= mouse_y <= \
+        quit_button_range[1][1]
 
 
 running = True
@@ -117,6 +120,7 @@ while running:
                 menu_state = "fade_in"
 
     elif game_state == "main_menu":
+        screen.fill("black")
         if menu_state == "fade_in":
             if background.alpha < 255:
                 background.alpha += 5
@@ -127,21 +131,53 @@ while running:
                     start_button_normal.alpha += 5
                     # credit_button_alpha += 5
                     quit_button_normal.alpha += 5
+                elif title_logo.alpha >= 255:
+                    menu_state = "hold"
 
-        if mouse_in_start_button():
-            if not pygame.mouse.get_pressed()[0]:
-                start_button_index = 1
+        elif menu_state == "hold":
+            if mouse_in_start_button():
+                if not pygame.mouse.get_pressed()[0]:
+                    start_button_index = 1
+                    quit_button_index = 0
+                elif pygame.mouse.get_pressed()[0]:
+                    start_button_index = 2
+                    quit_button_index = 0
+                    button_pressed = "start"
+            elif mouse_in_quit_button():
+                if not pygame.mouse.get_pressed()[0]:
+                    quit_button_index = 1
+                    start_button_index = 0
+                elif pygame.mouse.get_pressed()[0]:
+                    quit_button_index = 2
+                    start_button_index = 0
+                    button_pressed = "quit"
+            else:
+                start_button_index = 0
+                quit_button_index = 0
+                button_pressed = ""
 
-            elif pygame.mouse.get_pressed()[0]:
-                start_button_index = 2
-        elif mouse_in_quit_button():
-            if not pygame.mouse.get_pressed()[0]:
-                quit_button_index = 1
-            elif pygame.mouse.get_pressed()[0]:
-                quit_button_index = 2
-        else:
-            start_button_index = 0
-            quit_button_index = 0
+        elif menu_state == "fade_out":
+            if background.alpha > 0:
+                background.alpha -= 3
+                title_logo.alpha -= 3
+                start_button_normal.alpha -= 3
+                quit_button_normal.alpha -= 3
+            elif button_pressed == "start":
+                button_pressed = ""
+                continue
+            elif button_pressed == "quit":
+                button_pressed = ""
+                pygame.quit()
+                sys.exit()
+
+        if not pygame.mouse.get_pressed()[0]:
+            if mouse_in_start_button() and button_pressed == "start":
+                start_button_index = 0
+                quit_button_index = 0
+            elif mouse_in_quit_button() and button_pressed == "quit":
+                start_button_index = 0
+                quit_button_index = 0
+                menu_state = "fade_out"
 
     background.image.set_alpha(background.alpha)
     title_logo.image.set_alpha(title_logo.alpha)
@@ -154,21 +190,5 @@ while running:
     screen.blit(start_button[start_button_index], start_button_normal.image.get_rect(center=(170, 500)))
     screen.blit(quit_button[quit_button_index], quit_button_normal.image.get_rect(center=(170, 590)))
 
-
-
-
-
-
-
-
-
-
-
-
     pygame.display.update()
     pygame.time.Clock().tick(60)
-
-
-
-
-
