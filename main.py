@@ -52,15 +52,20 @@ start_button_range = ((105,466),(235,534))
 quit_button_range = ((105,556),(228,624))
 
 start_button = [start_button_normal,start_button_hover,start_button_pressed]
-quit_button = [quit_button_normal,quit_button_hover,quit_button_pressed]
 start_button_index = 0
+
+
+quit_button = [quit_button_normal,quit_button_hover,quit_button_pressed]
 quit_button_index = 0
+
 
 def mouse_in_start_button():
     return start_button_range[0][0] <= mouse_x <= start_button_range[1][0] and start_button_range[0][1] <= mouse_y <= start_button_range[1][1]
 
 def mouse_in_quit_button():
     return quit_button_range[0][0] <= mouse_x <= quit_button_range[1][0] and quit_button_range[0][1] <= mouse_y <= quit_button_range[1][1]
+
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -107,9 +112,16 @@ while running:
                     quit_button_alpha += 5
 
         if mouse_in_start_button():
-            start_button_index = 1
+            if not pygame.mouse.get_pressed()[0]:
+                start_button_index = 1
+
+            elif pygame.mouse.get_pressed()[0]:
+                start_button_index = 2
         elif mouse_in_quit_button():
-            quit_button_index = 1
+            if not pygame.mouse.get_pressed()[0]:
+                quit_button_index = 1
+            elif pygame.mouse.get_pressed()[0]:
+                quit_button_index = 2
         else:
             start_button_index = 0
             quit_button_index = 0
@@ -124,6 +136,12 @@ while running:
     screen.blit(title_logo, title_logo.get_rect(center=(230, 70)))
     screen.blit(start_button[start_button_index], start_button_normal.get_rect(center=(170, 500)))
     screen.blit(quit_button[quit_button_index], quit_button_normal.get_rect(center=(170, 590)))
+
+
+
+
+
+
 
 
 
