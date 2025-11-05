@@ -58,3 +58,4 @@ elif game_state == "detain_animation":
     if elapsed >= detain_duration:
         current_character_index = (current_character_index + 1) % len(characters)
         game_state = "border_control"
+
