@@ -134,7 +134,7 @@ while running:
                 quit_button_normal.alpha -= 3
             elif button_pressed == "start":
                 button_pressed = ""
-                continue
+                game_state = "main_game"
             elif button_pressed == "quit":
                 button_pressed = ""
                 pygame.quit()
