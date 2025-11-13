@@ -135,6 +135,7 @@ while running:
             elif button_pressed == "start":
                 button_pressed = ""
                 game_state = "main_game"
+
             elif button_pressed == "quit":
                 button_pressed = ""
                 pygame.quit()
