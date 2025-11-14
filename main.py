@@ -11,10 +11,11 @@ pygame.display.set_caption(f'Passport To The Star {game_version}')
 
 
 class Image:
-    def __init__(self, path: str, size: tuple[float, float], alpha: int = 0):
+    def __init__(self, path: str, size: tuple[float, float], alpha: int = 0, show: bool = True):
         self.path = path
         self.size = size
         self.alpha = alpha
+        self.show = show
         self.image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
 
 
@@ -27,11 +28,18 @@ start_button_pressed = Image('image/start_pressed.png', (187.5, 100), 0)
 quit_button_normal = Image('image/quit.png', (187.5, 100), 0)
 quit_button_hover = Image('image/quit_hover.png', (187.5, 100), 0)
 quit_button_pressed = Image('image/quit_pressed.png', (187.5, 100), 0)
+game_background = Image('image/game_background.png', screen_size, 0)
+passport_1 = Image('image/passport_1.png', (96,143.0625), 255)
+passport_2 = Image('image/passport_2.png', (96,143.0625), 255)
+passport_3 = Image('image/passport_3.png', (96,143.0625), 255)
+passport_4 = Image('image/passport_4.png', (96,143.0625), 255)
+passport_5 = Image('image/passport_5.png', (96,143.0625), 255)
+
 
 splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
-title_state = "off"
+# title_state = "off"
 button_pressed = ""
 
 start_button_range = ((131.25, 582.5), (293.75, 667.5))
@@ -52,6 +60,7 @@ def mouse_in_start_button():
 def mouse_in_quit_button():
     return quit_button_range[0][0] <= mouse_x <= quit_button_range[1][0] and quit_button_range[0][1] <= mouse_y <= \
         quit_button_range[1][1]
+
 
 
 running = True
@@ -94,7 +103,7 @@ while running:
             if background.alpha < 255:
                 background.alpha += 5
             elif background.alpha >= 255:
-                title_state = "on"
+
                 if title_logo.alpha < 255:
                     title_logo.alpha += 5
                     start_button_normal.alpha += 5
@@ -135,7 +144,7 @@ while running:
             elif button_pressed == "start":
                 button_pressed = ""
                 game_state = "main_game"
-
+                game_screen = "fade in"
             elif button_pressed == "quit":
                 button_pressed = ""
                 pygame.quit()
@@ -151,16 +160,38 @@ while running:
                 quit_button_index = 0
                 menu_state = "fade_out"
 
-    background.image.set_alpha(background.alpha)
-    title_logo.image.set_alpha(title_logo.alpha)
-    start_button_normal.image.set_alpha(start_button_normal.alpha)
-    # credit_button.set_alpha(credit_button_alpha)
-    quit_button_normal.image.set_alpha(quit_button_normal.alpha)
+        background.image.set_alpha(background.alpha)
+        title_logo.image.set_alpha(title_logo.alpha)
+        start_button_normal.image.set_alpha(start_button_normal.alpha)
+        # credit_button.set_alpha(credit_button_alpha)
+        quit_button_normal.image.set_alpha(quit_button_normal.alpha)
 
-    screen.blit(background.image, (0, 0))
-    screen.blit(title_logo.image, title_logo.image.get_rect(center=(287.5, 87.5)))
-    screen.blit(start_button[start_button_index], start_button_normal.image.get_rect(center=(212.5, 625)))
-    screen.blit(quit_button[quit_button_index], quit_button_normal.image.get_rect(center=(212.5, 737.5)))
+        screen.blit(background.image, (0, 0))
+        screen.blit(title_logo.image, title_logo.image.get_rect(center=(287.5, 87.5)))
+        screen.blit(start_button[start_button_index], start_button_normal.image.get_rect(center=(212.5, 625)))
+        screen.blit(quit_button[quit_button_index], quit_button_normal.image.get_rect(center=(212.5, 737.5)))
+
+    if game_state == "main_game":
+        if game_screen == "fade_in":
+            if game_background.alpha < 255:
+                game_background.alpha += 5
+                game_background.image.set_alpha(game_background.alpha)
+            elif game_background.alpha >= 255:
+                game_screen = "hold"
+        elif game_screen == "hold":
+            pass
+
+
+        screen.blit(game_background.image, (0, 0))
+        if passport_1.show:
+            screen.blit(passport_1.image, passport_1.image.get_rect(center=(350, 640)))
+        elif passport_2.show:
+            pass
+
+
+
+
+
 
     pygame.display.update()
     pygame.time.Clock().tick(60)
