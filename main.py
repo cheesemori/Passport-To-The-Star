@@ -29,11 +29,17 @@ quit_button_normal = Image('image/quit.png', (187.5, 100), 0)
 quit_button_hover = Image('image/quit_hover.png', (187.5, 100), 0)
 quit_button_pressed = Image('image/quit_pressed.png', (187.5, 100), 0)
 game_background = Image('image/game_background.png', screen_size, 0)
-passport_1 = Image('image/passport_1.png', (96,143.0625), 255)
-passport_2 = Image('image/passport_2.png', (96,143.0625), 255)
-passport_3 = Image('image/passport_3.png', (96,143.0625), 255)
-passport_4 = Image('image/passport_4.png', (96,143.0625), 255)
-passport_5 = Image('image/passport_5.png', (96,143.0625), 255)
+passport_1_normal = Image('image/passport_1.png', (96,143.0625), 255)
+passport_1_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
+passport_1_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
+passport_2_normal = Image('image/passport_2.png', (96,143.0625), 255)
+passport_2_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
+passport_2_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
+passport_3_normal = Image('image/passport_3.png', (96,143.0625), 255)
+passport_4_normal = Image('image/passport_4.png', (96,143.0625), 255)
+passport_5_normal = Image('image/passport_5.png', (96,143.0625), 255)
+# passport_hover = Image('image/passport_hover.png', (96,143.0625), 255)
+
 
 
 splash_state = "fade_in"
@@ -50,6 +56,9 @@ start_button_index = 0
 
 quit_button = [quit_button_normal.image, quit_button_hover.image, quit_button_pressed.image]
 quit_button_index = 0
+
+passport_1 = [passport_1_normal.image, passport_1_hover.image, passport_1_pressed.image]
+passport_1_index = 0
 
 
 def mouse_in_start_button():
