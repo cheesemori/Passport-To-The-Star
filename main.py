@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -17,6 +18,7 @@ class Image:
         self.alpha = alpha
         self.show = show
         self.image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
+        self.rect = self.image.get_rect()
 
 
 background = Image('image/background.png', screen_size, 0)
@@ -29,30 +31,44 @@ quit_button_normal = Image('image/quit.png', (187.5, 100), 0)
 quit_button_hover = Image('image/quit_hover.png', (187.5, 100), 0)
 quit_button_pressed = Image('image/quit_pressed.png', (187.5, 100), 0)
 game_background = Image('image/game_background.png', screen_size, 0)
-passport_1 = Image('image/passport_1.png', (96,143.0625), 255)
+passport_1 = Image('image/passport_1.png', (96,143.0625), 255, show=False)
 passport_1_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
 passport_1_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
-passport_2 = Image('image/passport_2.png', (96,143.0625), 255)
+passport_2 = Image('image/passport_2.png', (96,143.0625), 255, show=False)
 passport_2_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
 passport_2_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
-passport_3 = Image('image/passport_3.png', (96,143.0625), 255)
-passport_4 = Image('image/passport_4.png', (96,143.0625), 255)
-passport_5 = Image('image/passport_5.png', (96,143.0625), 255)
+passport_3 = Image('image/passport_3.png', (96,143.0625), 255, show=False)
+passport_4 = Image('image/passport_4.png', (96,143.0625), 255, show=False)
+passport_5 = Image('image/passport_5.png', (96,143.0625), 255, show=False)
 # passport_hover = Image('image/passport_hover.png', (96,143.0625), 255)
 
-passport = [passport_1,passport_2,passport_3,passport_4,passport_5,passport_5]
+passport_list = [passport_1,passport_2,passport_3,passport_4,passport_5,passport_5]
 
-passport_details = Image('image/passport_details.png', (96,143.0625), 255)
+
+character_1 = Image('image/character_1.png', (500,500), 255, show=False)
+character_2 = Image('image/character_2.png', (500,500), 255, show=False)
+character_3 = Image('image/character_3.png', (500,500), 255, show=False)
+character_4 = Image('image/character_4.png', (500,500), 255, show=False)
+character_5 = Image('image/character_5.png', (500,500), 255, show=False)
+character_6 = Image('image/character_6.png', (500,500), 255, show=False)
+character_7 = Image('image/character_7.png', (500,500), 255, show=False)
+character_list = [character_1,character_2,character_3,character_4,character_5,character_6,character_7]
+
+
+passport_details = Image('image/passport_details.png', (400,600), 255,show=False)
 
 splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
 game_state = "main_game"
+game_screen = "fade_in"
 # title_state = "off"
 button_pressed = ""
+go_next_round = True
 
 start_button_range = ((131.25, 582.5), (293.75, 667.5))
 quit_button_range = ((131.25, 695), (285, 780))
+passport_range = ((302,570),(396,711))
 
 
 start_button = [start_button_normal.image, start_button_hover.image, start_button_pressed.image]
@@ -77,7 +93,9 @@ def mouse_in_quit_button():
     return quit_button_range[0][0] <= mouse_x <= quit_button_range[1][0] and quit_button_range[0][1] <= mouse_y <= \
         quit_button_range[1][1]
 
-
+def mouse_in_passport():
+    return passport_range[0][0] <= mouse_x <= passport_range[1][0] and passport_range[0][1] <= mouse_y <= \
+        passport_range[1][1]
 
 running = True
 while running:
@@ -188,6 +206,7 @@ while running:
         screen.blit(quit_button[quit_button_index], quit_button_normal.image.get_rect(center=(212.5, 737.5)))
 
     if game_state == "main_game":
+        screen.fill("black")
         if game_screen == "fade_in":
             if game_background.alpha < 255:
                 game_background.alpha += 5
@@ -195,7 +214,27 @@ while running:
             elif game_background.alpha >= 255:
                 game_screen = "hold"
         elif game_screen == "hold":
-            pass
+            def new_round(last_index):
+                character_index = random.randint(0,6)
+                passport_index = random.randint(0,4)
+                passport_list[passport_index].show = True
+                character_list[character_index].show = True
+                while True:
+                    if character_index != last_index:
+                        return character_index
+                    else:
+                        character_index = random.randint(0,6)
+
+
+            if go_next_round:
+                last_character_index = new_round(666)
+                go_next_round = False
+
+
+
+
+
+
 
         if font_size != target_size:
             font_size = target_size
@@ -203,9 +242,18 @@ while running:
 
 
         screen.blit(game_background.image, (0, 0))
-        for passport in passport:
+        for passport in passport_list:
             if passport.show:
                 screen.blit(passport.image, passport.image.get_rect(center=(350, 640)))
+                if mouse_in_passport() and pygame.mouse.get_pressed()[0]:
+                    passport_details.show = not passport_details.show
+
+        for character in character_list:
+            if character.show:
+                screen.blit(character.image, character.image.get_rect(center=(250, 260)))
+        if passport_details.show:
+            pass
+
 
 
 
