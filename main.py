@@ -52,17 +52,14 @@ passport_list = [passport_1, passport_2, passport_3, passport_4, passport_5]
 character_1 = Image('image/character_1.png', (500, 500), 255, show=False)
 character_2 = Image('image/character_2.png', (500, 500), 255, show=False)
 character_3 = Image('image/character_3.png', (500, 500), 255, show=False)
-character_4 = Image('image/character_4.png', (500, 500), 255, show=False)
-character_5 = Image('image/character_5.png', (500, 500), 255, show=False)
-character_6 = Image('image/character_6.png', (500, 500), 255, show=False)
-character_7 = Image('image/character_7.png', (500, 500), 255, show=False)
-character_list = [character_1, character_2, character_3, character_4, character_5, character_6, character_7]
 
-passport_details = Image('image/passport_details.png', (420, 280), 255, show=False)
+character_list = [character_1, character_2, character_3]
 
+passport_details_1 = Image('image/passport_details_1.png', (420, 280), 255, show=False)
+passport_details_2 = Image('image/passport_details_2.png', (420, 280), 255, show=False)
+passport_details_3 = Image('image/passport_details_3.png', (420, 280), 255, show=False)
 
-
-
+passport_details_list = [passport_details_1, passport_details_2, passport_details_3]
 
 
 # states
@@ -74,7 +71,7 @@ game_screen = "fade_in"
 button_pressed = ""
 go_next_round = True
 last_character_index = None
-
+selected_character_index = 0
 # game_state = "main_game"
 # game_screen = "fade_in"
 
@@ -126,7 +123,7 @@ def mouse_in_next_button(x, y):
 
 
 def new_round(last_index):
-    global passport_details, current_weight
+    global passport_details_list, current_weight, selected_character_index
 
     # hide all passports and characters
     for p in passport_list:
@@ -134,8 +131,6 @@ def new_round(last_index):
     for c in character_list:
         c.show = False
 
-    # close details when new round starts
-    passport_details.show = False
 
     # choose character (not same as last one if possible)
     if last_index is None:
@@ -154,7 +149,7 @@ def new_round(last_index):
 
     # generate random weight for this character (you can change range later)
     current_weight = random.randint(50, 90)  # e.g. 50–120 kg
-
+    selected_character_index = character_index
     return character_index
 
 
@@ -301,7 +296,7 @@ while running:
             if passport.show:
                 screen.blit(passport.image, passport.image.get_rect(center=(350, 640)))
                 if mouse_in_passport(mouse_x, mouse_y) and mouse_clicked:
-                    passport_details.show = not passport_details.show
+                    passport_details_list[selected_character_index].show = not passport_details_list[selected_character_index].show
 
         # draw character
         for character in character_list:
@@ -334,8 +329,8 @@ while running:
         screen.blit(next_text, next_text_rect)
 
         # show passport details if toggled
-        if passport_details.show:
-            screen.blit(passport_details.image, passport_details.image.get_rect(center=(759, 381)))
+        if passport_details_list[selected_character_index].show:
+            screen.blit(passport_details_list[selected_character_index].image, passport_details_list[selected_character_index].image.get_rect(center=(759, 381)))
 
 
 
