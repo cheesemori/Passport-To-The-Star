@@ -54,9 +54,9 @@ character_6 = Image('image/character_6.png', (500,500), 255, show=False)
 character_7 = Image('image/character_7.png', (500,500), 255, show=False)
 character_list = [character_1,character_2,character_3,character_4,character_5,character_6,character_7]
 
-
 passport_details = Image('image/passport_details.png', (420,280), 255,show=False)
 
+next_button = Image('image/next_button.png', (300,160), 0,show=False)
 splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
@@ -230,6 +230,7 @@ while running:
                 game_screen = "hold"
         elif game_screen == "hold":
 
+
             if go_next_round:
                 last_character_index = new_round(666)
                 go_next_round = False
@@ -254,7 +255,7 @@ while running:
             if character.show:
                 screen.blit(character.image, character.image.get_rect(center=(250, 260)))
         if passport_details.show:
-            screen.blit(passport_details.image, passport_details.image.get_rect(center=(250, 260)))
+            screen.blit(passport_details.image, passport_details.image.get_rect(center=(759, 381)))
 
 
 
