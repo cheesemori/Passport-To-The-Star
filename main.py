@@ -29,27 +29,31 @@ quit_button_normal = Image('image/quit.png', (187.5, 100), 0)
 quit_button_hover = Image('image/quit_hover.png', (187.5, 100), 0)
 quit_button_pressed = Image('image/quit_pressed.png', (187.5, 100), 0)
 game_background = Image('image/game_background.png', screen_size, 0)
-passport_1_normal = Image('image/passport_1.png', (96,143.0625), 255)
+passport_1 = Image('image/passport_1.png', (96,143.0625), 255)
 passport_1_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
 passport_1_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
-passport_2_normal = Image('image/passport_2.png', (96,143.0625), 255)
+passport_2 = Image('image/passport_2.png', (96,143.0625), 255)
 passport_2_hover = Image('image/passport_1_hover.png', (187.5, 100), 255)
 passport_2_pressed = Image('image/passport_1_pressed.png', (187.5, 100), 255)
-passport_3_normal = Image('image/passport_3.png', (96,143.0625), 255)
-passport_4_normal = Image('image/passport_4.png', (96,143.0625), 255)
-passport_5_normal = Image('image/passport_5.png', (96,143.0625), 255)
+passport_3 = Image('image/passport_3.png', (96,143.0625), 255)
+passport_4 = Image('image/passport_4.png', (96,143.0625), 255)
+passport_5 = Image('image/passport_5.png', (96,143.0625), 255)
 # passport_hover = Image('image/passport_hover.png', (96,143.0625), 255)
 
+passport = [passport_1,passport_2,passport_3,passport_4,passport_5,passport_5]
 
+passport_details = Image('image/passport_details.png', (96,143.0625), 255)
 
 splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
+game_state = "main_game"
 # title_state = "off"
 button_pressed = ""
 
 start_button_range = ((131.25, 582.5), (293.75, 667.5))
 quit_button_range = ((131.25, 695), (285, 780))
+
 
 start_button = [start_button_normal.image, start_button_hover.image, start_button_pressed.image]
 start_button_index = 0
@@ -57,9 +61,12 @@ start_button_index = 0
 quit_button = [quit_button_normal.image, quit_button_hover.image, quit_button_pressed.image]
 quit_button_index = 0
 
-passport_1 = [passport_1_normal.image, passport_1_hover.image, passport_1_pressed.image]
+# passport_1 = [passport_1_normal.image, passport_1_hover.image, passport_1_pressed.image]
 passport_1_index = 0
 
+font_size = 50
+target_size = 50
+pixel_font = pygame.font.Font('font/GamePocket-Regular.ttf', font_size)
 
 def mouse_in_start_button():
     return start_button_range[0][0] <= mouse_x <= start_button_range[1][0] and start_button_range[0][1] <= mouse_y <= \
@@ -190,12 +197,16 @@ while running:
         elif game_screen == "hold":
             pass
 
+        if font_size != target_size:
+            font_size = target_size
+
+
 
         screen.blit(game_background.image, (0, 0))
-        if passport_1.show:
-            screen.blit(passport_1.image, passport_1.image.get_rect(center=(350, 640)))
-        elif passport_2.show:
-            pass
+        for passport in passport:
+            if passport.show:
+                screen.blit(passport.image, passport.image.get_rect(center=(350, 640)))
+
 
 
 
