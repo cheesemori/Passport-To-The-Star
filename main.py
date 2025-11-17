@@ -18,7 +18,7 @@ class Image:
         self.alpha = alpha
         self.show = show
         self.image = pygame.transform.scale(pygame.image.load(path).convert_alpha(), size)
-        self.rect = self.image.get_rect()
+        # self.rect = self.image.get_rect()
 
 
 background = Image('image/background.png', screen_size, 0)
@@ -55,17 +55,17 @@ character_7 = Image('image/character_7.png', (500,500), 255, show=False)
 character_list = [character_1,character_2,character_3,character_4,character_5,character_6,character_7]
 
 
-passport_details = Image('image/passport_details.png', (400,600), 255,show=False)
+passport_details = Image('image/passport_details.png', (420,280), 255,show=False)
 
 splash_state = "fade_in"
 menu_state = ""
 game_state = "splash"
-game_state = "main_game"
-game_screen = "fade_in"
+# game_state = "main_game"
+game_screen = ""
 # title_state = "off"
 button_pressed = ""
 go_next_round = True
-
+mouse_clicked = False
 start_button_range = ((131.25, 582.5), (293.75, 667.5))
 quit_button_range = ((131.25, 695), (285, 780))
 passport_range = ((302,570),(396,711))
@@ -97,6 +97,18 @@ def mouse_in_passport():
     return passport_range[0][0] <= mouse_x <= passport_range[1][0] and passport_range[0][1] <= mouse_y <= \
         passport_range[1][1]
 
+
+def new_round(last_index):
+    character_index = random.randint(0, 6)
+    passport_index = random.randint(0, 4)
+    passport_list[passport_index].show = True
+    character_list[character_index].show = True
+    while True:
+        if character_index != last_index:
+            return character_index
+        else:
+            character_index = random.randint(0, 6)
+
 running = True
 while running:
     for event in pygame.event.get():
@@ -104,6 +116,7 @@ while running:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_clicked = True
             print(f"mouse position: {event.pos}")
 
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -175,10 +188,11 @@ while running:
                 title_logo.alpha -= 3
                 start_button_normal.alpha -= 3
                 quit_button_normal.alpha -= 3
-            elif button_pressed == "start":
+            elif background.alpha<=0 and button_pressed == "start":
+                print(2)
                 button_pressed = ""
                 game_state = "main_game"
-                game_screen = "fade in"
+                game_screen = "fade_in"
             elif button_pressed == "quit":
                 button_pressed = ""
                 pygame.quit()
@@ -207,6 +221,7 @@ while running:
 
     if game_state == "main_game":
         screen.fill("black")
+        screen.blit(game_background.image, (0, 0))
         if game_screen == "fade_in":
             if game_background.alpha < 255:
                 game_background.alpha += 5
@@ -214,17 +229,6 @@ while running:
             elif game_background.alpha >= 255:
                 game_screen = "hold"
         elif game_screen == "hold":
-            def new_round(last_index):
-                character_index = random.randint(0,6)
-                passport_index = random.randint(0,4)
-                passport_list[passport_index].show = True
-                character_list[character_index].show = True
-                while True:
-                    if character_index != last_index:
-                        return character_index
-                    else:
-                        character_index = random.randint(0,6)
-
 
             if go_next_round:
                 last_character_index = new_round(666)
@@ -240,19 +244,17 @@ while running:
             font_size = target_size
 
 
-
-        screen.blit(game_background.image, (0, 0))
         for passport in passport_list:
             if passport.show:
                 screen.blit(passport.image, passport.image.get_rect(center=(350, 640)))
-                if mouse_in_passport() and pygame.mouse.get_pressed()[0]:
+                if mouse_in_passport() and mouse_clicked:
                     passport_details.show = not passport_details.show
 
         for character in character_list:
             if character.show:
                 screen.blit(character.image, character.image.get_rect(center=(250, 260)))
         if passport_details.show:
-            pass
+            screen.blit(passport_details.image, passport_details.image.get_rect(center=(250, 260)))
 
 
 
@@ -260,6 +262,7 @@ while running:
 
 
 
-
+    if mouse_clicked:
+        mouse_clicked = False
     pygame.display.update()
     pygame.time.Clock().tick(60)
