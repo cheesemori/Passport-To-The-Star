@@ -61,6 +61,8 @@ passport_details_3 = Image('image/passport_details_3.png', (420, 280), 255, show
 
 passport_details_list = [passport_details_1, passport_details_2, passport_details_3]
 
+# guard image
+guard = Image('image/guard.png', (500, 555), 255, show=False)
 
 # states
 mouse_clicked = False
@@ -69,15 +71,21 @@ menu_state = ""
 game_state = "splash"
 game_screen = "fade_in"
 button_pressed = ""
-go_next_round = True
+
+# big change: do NOT start with a character; wait for NEXT click
+go_next_round = False          # was True before
 last_character_index = None
 selected_character_index = 0
-# game_state = "main_game"
-# game_screen = "fade_in"
-
 
 # will store the current character weight
 current_weight = None
+
+# guard / detain animation state
+guard_active = False      # guard is walking in
+guard_fading = False      # character should start fading
+guard_pos_x = -200        # start off-screen on the left
+guard_target_x = 250      # x position near the character
+guard_speed = 3           # slower movement
 
 # ranges
 start_button_range = ((131.25, 582.5), (293.75, 667.5))
@@ -87,17 +95,25 @@ passport_range = ((302, 570), (396, 711))
 # next button rectangle (bottom right)
 next_button_range = ((800, 650), (1000, 730))
 
+# detain button centered at (911, 144) with width=80, height=50
+button_width = 80
+button_height = 50
+center_x, center_y = 911, 144
+detain_button_range = (
+    (center_x - button_width // 2, center_y - button_height // 2),
+    (center_x + button_width // 2, center_y + button_height // 2)
+)
+
 start_button = [start_button_normal.image, start_button_hover.image, start_button_pressed.image]
 start_button_index = 0
 
 quit_button = [quit_button_normal.image, quit_button_hover.image, quit_button_pressed.image]
 quit_button_index = 0
 
-passport_1_index = 0
-
 font_size = 50
 target_size = 50
 pixel_font = pygame.font.Font('font/GamePocket-Regular.ttf', font_size)
+detain_font = pygame.font.Font('font/GamePocket-Regular.ttf', 25)  # smaller text for detain button
 
 clock = pygame.time.Clock()
 
@@ -122,15 +138,26 @@ def mouse_in_next_button(x, y):
            next_button_range[0][1] <= y <= next_button_range[1][1]
 
 
+def mouse_in_detain_button(x, y):
+    return detain_button_range[0][0] <= x <= detain_button_range[1][0] and \
+           detain_button_range[0][1] <= y <= detain_button_range[1][1]
+
+
+def any_character_showing():
+    return any(c.show for c in character_list)
+
+
 def new_round(last_index):
     global passport_details_list, current_weight, selected_character_index
+    global guard_active, guard_fading, guard_pos_x
 
     # hide all passports and characters
     for p in passport_list:
         p.show = False
     for c in character_list:
         c.show = False
-
+        c.alpha = 255
+        c.image.set_alpha(c.alpha)
 
     # choose character (not same as last one if possible)
     if last_index is None:
@@ -147,9 +174,20 @@ def new_round(last_index):
     passport_list[passport_index].show = True
     character_list[character_index].show = True
 
-    # generate random weight for this character (you can change range later)
-    current_weight = random.randint(50, 90)  # e.g. 50–120 kg
+    # generate random weight for this character
+    current_weight = random.randint(50, 90)
     selected_character_index = character_index
+
+    # reset guard state
+    guard_active = False
+    guard_fading = False
+    guard_pos_x = -200
+    guard.show = False
+
+    # hide details for new round
+    for d in passport_details_list:
+        d.show = False
+
     return character_index
 
 
@@ -166,10 +204,18 @@ while running:
             mouse_clicked = True
             print(f"mouse position: {event.pos}")
 
-            # next button click in main game
+            # next / detain clicks in main game
             if event.button == 1 and game_state == "main_game" and game_screen == "hold":
+                # NEXT: always allowed, this is what spawns the character
                 if mouse_in_next_button(event.pos[0], event.pos[1]):
                     go_next_round = True
+
+                # DETAIN: only if a character is actually present
+                elif mouse_in_detain_button(event.pos[0], event.pos[1]) and any_character_showing():
+                    guard_active = True
+                    guard_fading = False
+                    guard_pos_x = -200
+                    guard.show = True
 
     # splash screen
     if game_state == "splash":
@@ -281,12 +327,10 @@ while running:
                 game_screen = "hold"
 
         elif game_screen == "hold":
+            # only spawn character after NEXT clicked
             if go_next_round:
                 last_character_index = new_round(last_character_index)
                 go_next_round = False
-
-        if font_size != target_size:
-            font_size = target_size
 
         # draw game background
         screen.blit(game_background.image, (0, 0))
@@ -298,15 +342,20 @@ while running:
                 if mouse_in_passport(mouse_x, mouse_y) and mouse_clicked:
                     passport_details_list[selected_character_index].show = not passport_details_list[selected_character_index].show
 
-        # draw character
-        for character in character_list:
+        # draw character (fade only AFTER guard reaches character)
+        for idx, character in enumerate(character_list):
             if character.show:
+                if guard_fading and idx == selected_character_index:
+                    if character.alpha > 0:
+                        character.alpha -= 3  # slower fade
+                        if character.alpha < 0:
+                            character.alpha = 0
+                        character.image.set_alpha(character.alpha)
                 screen.blit(character.image, character.image.get_rect(center=(250, 260)))
 
-        # draw weight label (you can change position later)
+        # draw weight label
         if current_weight is not None:
             weight_text = pixel_font.render(f"{current_weight} kg", True, (0, 0, 0))
-            # placeholder position (right side, near top)
             screen.blit(weight_text, (419, 383))
 
         # draw next button
@@ -315,26 +364,61 @@ while running:
         btn_width = btn_x2 - btn_x1
         btn_height = btn_y2 - btn_y1
 
-        # simple hover effect
         if mouse_in_next_button(mouse_x, mouse_y):
-            rect_color = (255, 255, 255)  # white when hover
+            rect_color = (255, 255, 255)
         else:
-            rect_color = (200, 200, 200)  # light grey
+            rect_color = (200, 200, 200)
 
         pygame.draw.rect(screen, rect_color, (btn_x1, btn_y1, btn_width, btn_height))
-        pygame.draw.rect(screen, (0, 0, 0), (btn_x1, btn_y1, btn_width, btn_height), 3)  # black border
+        pygame.draw.rect(screen, (0, 0, 0), (btn_x1, btn_y1, btn_width, btn_height), 3)
 
         next_text = pixel_font.render("NEXT", True, (0, 0, 0))
         next_text_rect = next_text.get_rect(center=((btn_x1 + btn_x2) // 2, (btn_y1 + btn_y2) // 2))
         screen.blit(next_text, next_text_rect)
 
+        # draw detain button
+        db_x1, db_y1 = detain_button_range[0]
+        db_x2, db_y2 = detain_button_range[1]
+        db_width = db_x2 - db_x1
+        db_height = db_y2 - db_y1
+
+        pygame.draw.rect(screen, (255, 0, 0), (db_x1, db_y1, db_width, db_height))
+        pygame.draw.rect(screen, (0, 0, 0), (db_x1, db_y1, db_width, db_height), 2)
+
+        detain_text = detain_font.render("DETAIN", True, (0, 0, 0))
+        detain_text_rect = detain_text.get_rect(center=((db_x1 + db_x2) // 2, (db_y1 + db_y2) // 2))
+        screen.blit(detain_text, detain_text_rect)
+
+        # guard animation: from left to right, lower on screen (y = 260)
+        if guard_active:
+            guard_pos_x += guard_speed
+            if guard_pos_x >= guard_target_x:
+                guard_pos_x = guard_target_x
+                guard_active = False
+                guard_fading = True  # only now start fading character
+            screen.blit(guard.image, guard.image.get_rect(center=(guard_pos_x, 250)))
+
+        # finish detain once character fully faded
+        if guard_fading and character_list[selected_character_index].alpha <= 0:
+            character_list[selected_character_index].show = False
+            for p in passport_list:
+                p.show = False
+            passport_details_list[selected_character_index].show = False
+            current_weight = None
+            go_next_round = False  # wait again for NEXT click
+            guard_fading = False
+            guard.show = False
+            guard_pos_x = -200  # reset for next detain
+
         # show passport details if toggled
         if passport_details_list[selected_character_index].show:
-            screen.blit(passport_details_list[selected_character_index].image, passport_details_list[selected_character_index].image.get_rect(center=(759, 381)))
-
-
+            screen.blit(
+                passport_details_list[selected_character_index].image,
+                passport_details_list[selected_character_index].image.get_rect(center=(759, 381))
+            )
 
     if mouse_clicked:
         mouse_clicked = False
+
     pygame.display.update()
     clock.tick(60)
