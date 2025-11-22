@@ -4,7 +4,7 @@ import random
 
 pygame.init()
 
-game_version = "v0.2"
+game_version = "v0.3"
 screen_size = (1000, 800)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption(f'Passport To The Star {game_version}')
@@ -62,7 +62,7 @@ passport_details_3 = Image('image/passport_details_3.png', (420, 280), 255, show
 passport_details_list = [passport_details_1, passport_details_2, passport_details_3]
 
 # guard image
-guard = Image('image/guard.png', (500, 555), 255, show=False)
+guard = Image('image/guard.png', (500, 500), 255, show=False)
 
 # states
 mouse_clicked = False
@@ -98,7 +98,7 @@ next_button_range = ((800, 650), (1000, 730))
 # detain button centered at (911, 144) with width=80, height=50
 button_width = 80
 button_height = 50
-center_x, center_y = 911, 144
+center_x, center_y = 960, 144
 detain_button_range = (
     (center_x - button_width // 2, center_y - button_height // 2),
     (center_x + button_width // 2, center_y + button_height // 2)
