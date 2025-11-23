@@ -11,7 +11,7 @@ screen_size = (1000, 800)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption(f'Passport To The Star {game_version}')
 
-dev = False
+dev = True
 
 class Image:
     def __init__(self, path: str, size: tuple[float, float], alpha: int = 0, show: bool = True):
@@ -90,7 +90,7 @@ accept = Image('image/accept.png',(270,270),255, show=False)
 # rejected Image
 reject = Image('image/reject.png',(270,270),255, show=False)
 # mic Image
-mic_button = MicButton("image/mic.png", (54, 646))
+mic_button = MicButton("image/mic.png", (30, 630))
 dialogue_manager = DialogueManager()
 
 # states
@@ -481,7 +481,7 @@ while running:
             if entry_permit_list[selected_character_index].show:
                 screen.blit(
                     entry_permit_list[selected_character_index].image,
-                    entry_permit_list[selected_character_index].image.get_rect(center=(720, 381))
+                    entry_permit_list[selected_character_index].image.get_rect(center=(880, 381))
                 )
 
             if mouse_in_accept_stamp(mouse_x, mouse_y) and mouse_clicked and character_list[selected_character_index].show and not reject.show:

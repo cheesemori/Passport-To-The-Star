@@ -5,7 +5,7 @@ class MicButton:
         self.raw_image = pygame.image.load(path).convert_alpha()
 
         # make the mic BIGGER — adjust size here
-        self.image = pygame.transform.scale(self.raw_image, (55, 90))
+        self.image = pygame.transform.scale(self.raw_image, (90, 90))
 
         self.rect = self.image.get_rect()
         self.rect.topleft = pos  # bottom-left position
