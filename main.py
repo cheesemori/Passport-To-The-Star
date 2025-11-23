@@ -462,16 +462,16 @@ while running:
                     passport_details_list[selected_character_index].image,
                     passport_details_list[selected_character_index].image.get_rect(center=(759, 381))
                 )
-            elif entry_permit_list[selected_character_index].show:
+
+            if entry_permit_list[selected_character_index].show:
                 screen.blit(
                     entry_permit_list[selected_character_index].image,
                     entry_permit_list[selected_character_index].image.get_rect(center=(720, 381))
                 )
-            if mouse_in_accept_stamp(mouse_x, mouse_y) and mouse_clicked and character_list[selected_character_index].show:
-                print("accepted")
+
+            if mouse_in_accept_stamp(mouse_x, mouse_y) and mouse_clicked and character_list[selected_character_index].show and not deny.show:
                 accept.show = True
-            if mouse_in_deny_stamp(mouse_x, mouse_y)and mouse_clicked and character_list[selected_character_index].show:
-                print("deny")
+            if mouse_in_deny_stamp(mouse_x, mouse_y)and mouse_clicked and character_list[selected_character_index].show and not accept.show:
                 deny.show = True
 
             screen.blit(stamp_1.image, stamp_1.image.get_rect(center=(605, 715)))
