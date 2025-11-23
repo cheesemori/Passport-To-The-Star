@@ -1,129 +1,117 @@
+import pygame
+
 class DialogueManager:
     def __init__(self):
-        # character dialogues (i can change these if you guys dont like them!)
-        self.dialogues = {
-            "DrZog": [
-    "Dr Zog: Oh dear... they said the experiment was illegal!",
-    "Border Staff: Illegal? You’d better explain that, doctor.",
-    "Dr Zog: You don't understand, my work can save lives!",
-    "Border Staff: Then why keep it secret? Sounds suspicious.",
-    "Dr Zog: Please, don’t report me — I just need more time.",
-    "Border Staff: Time isn’t something we hand out easily here.",
-    "Dr Zog: My research could heal worlds, not destroy them!",
-    "Border Staff: Every criminal says they’re saving the world.",
-    "Dr Zog: You have to trust me, inspector... for everyone’s sake.",
-    "Border Staff: Trust is earned, not requested at the border."
-],
+        self.staff_questions = [
+            "State your purpose for entering.",
+            "Where are you arriving from?",
+            "How long do you plan to stay?",
+            "Do you have any items to declare?",
+            "Is this your identification document?",
+            "Have you been to this station before?",
+            "Are you carrying any restricted materials?",
+            "Why did you choose to travel today?"
+        ]
 
-"Kraen": [
-    "Kraen: The Memory Stone must be protected.",
-    "Border Staff: Protected from who? You look nervous.",
-    "Kraen: Truth fades when no one remembers.",
-    "Border Staff: That sounds poetic... or dangerous.",
-    "Kraen: My people were erased once. Never again.",
-    "Border Staff: Then you understand why we check everyone.",
-    "Kraen: Let me pass. History is more fragile than flesh.",
-    "Border Staff: History doesn’t excuse forged documents.",
-    "Kraen: If I fail, no one will know we ever existed.",
-    "Border Staff: Then make sure your story is worth remembering."
-],
-
-"CaptainRhen": [
-    "Captain Rhen: Papers, please. Regulations are clear.",
-    "Border Staff: You sound just like me, Captain.",
-    "Captain Rhen: Do you question my duty, citizen?",
-    "Border Staff: Not your duty — your heart.",
-    "Captain Rhen: Every day feels the same... inspect, approve, deny.",
-    "Border Staff: That’s the price of order — repetition.",
-    "Captain Rhen: Sometimes, I wonder if I’m the villain here.",
-    "Border Staff: Only those with a conscience ever ask that.",
-    "Captain Rhen: The rules keep us safe — or so they say.",
-    "Border Staff: Safety’s just another word for control, isn’t it?"
-],
-         
-           "Merchant": [
-    "Merchant: I have travel permits right here — totally valid!",
-    "Border Staff: Relax, I’ll be the judge of that.",
-    "Merchant: Don’t open that crate, please. It’s... delicate cargo.",
-    "Border Staff: Delicate or illegal, which is it?",
-    "Merchant: Business is rough since the new inspection rules.",
-    "Border Staff: Then follow them, and you’ll have nothing to worry about.",
-    "Merchant: You know, a small tip could speed things up?",
-    "Border Staff: Try that again and you’ll lose more than time."
-],
-
-"Refugee": [
-    "Refugee: I escaped the outer colonies — please, let me through!",
-    "Border Staff: Easy there. Start with your identification.",
-    "Refugee: My family’s waiting inside the capital.",
-    "Border Staff: Everyone says that. Where’s your proof?",
-    "Refugee: I lost my papers during the storm!",
-    "Border Staff: Then you’ll have to wait until we can verify you.",
-    "Refugee: They said this border was safe... was that a lie?",
-    "Border Staff: Safety depends on cooperation — yours included."
-],
-
-"Smuggler": [
-    "Smuggler: Heh, it’s just medicine. For the children... sure.",
-    "Border Staff: Medicine doesn’t usually come with hidden compartments.",
-    "Smuggler: No need to search the bag, inspector. Waste of time.",
-    "Border Staff: Then you won’t mind if I check it anyway.",
-    "Smuggler: Relax, everyone brings a little something extra.",
-    "Border Staff: Extra is fine — contraband isn’t.",
-    "Smuggler: Come on, we both know how this works — credits talk.",
-    "Border Staff: Not today they don’t."
-],
-
-"Tourist": [
-    "Tourist: Is this the right line? I’m just visiting!",
-    "Border Staff: You’re in the right place — now show your passport.",
-    "Tourist: Wow, the guards here look... friendly?",
-    "Border Staff: Flattery won’t make the line shorter.",
-    "Tourist: Oh, my visa expired? That’s awkward.",
-    "Border Staff: Awkward and illegal. Why are you still here?",
-    "Tourist: I promise I’m not hiding anything! Well... maybe souvenirs.",
-    "Border Staff: We’ll be the ones to decide what’s a souvenir."
-],
-
-"Worker": [
-    "Worker: Another inspection? I’ll be late for my shift!",
-    "Border Staff: Then you should’ve arrived earlier.",
-    "Worker: Union said this checkpoint was fair. They lied.",
-    "Border Staff: You can file a complaint once you’re cleared.",
-    "Worker: It’s freezing out here — can we hurry?",
-    "Border Staff: Cold doesn’t change procedure.",
-    "Worker: All this for a simple work pass?",
-    "Border Staff: The simple ones cause the biggest problems."
-]
+        self.display_names = {
+            "CaptainDarrow": "Captain Darrow",
+            "Karea": "Karea",
+            "JacksonB": "Jackson B",
         }
 
-        # track index for each character
-        self.index = {name: 0 for name in self.dialogues}
+        self.answers = {
+            "CaptainDarrow": [
+                "Inspection duties. Classified.",
+                "Sector 7 Forward Command.",
+                "As long as command requires.",
+                "Nothing to declare.",
+                "Standard-issue military identification.",
+                "Multiple times. Routine audits.",
+                "Negative. Cleared by protocol Alpha-3.",
+                "Orders were issued this morning.",
+            ],
+            "Karea": [
+                "I seek refuge… please.",
+                "The Eldran Wastes. Nothing remains there.",
+                "I pray you allow me to stay permanently.",
+                "Only my memories and what I could carry.",
+                "It was damaged in the storms, but it is mine.",
+                "No… I never made it this far before.",
+                "Nothing dangerous. Only clothes.",
+                "Today was my only chance to escape.",
+            ],
+            "JacksonB": [
+                "Uhh… sightseeing? Yeah! Sightseeing.",
+                "Um… a shuttle… from… somewhere?",
+                "Just a tiny bit! Maybe!",
+                "Noooo… definitely not! Why do you ask?",
+                "Yep! That’s my passport! 100% mine.",
+                "I think? Maybe? I don’t remember…",
+                "Restricted? Me? Never! …Never.",
+                "Because the shuttle guy said it was safe today!",
+            ],
+        }
 
-        # dialogue display setup
+        self.current_character = None
+        self.staff_index = 0
+        self.staff_text = ""
+        self.character_text = ""
+
         self.font = pygame.font.Font(None, 26)
-        self.dialogue_text = ""
-        self.current_character = None  # not set yet 
 
-    def get_next_line(self):
-        
-        if not self.current_character or self.current_character not in self.dialogues:
-            return "No character selected."
-        name = self.current_character
-        lines = self.dialogues[name]
-        i = self.index[name]
-        line = lines[i]
-        self.index[name] = (i + 1) % len(lines)
-        return line
+    def set_character(self, name: str):
+        self.current_character = name
+        self.reset_dialogue()
 
-    def handle_click(self, pos, mic_rect):
-        
-        if mic_rect.collidepoint(pos):
-            self.dialogue_text = f"{self.current_character}: {self.get_next_line()}"
+    def reset_dialogue(self):
+        self.staff_index = 0
+        self.staff_text = ""
+        self.character_text = ""
 
+    def ask_next(self):
+        if self.current_character not in self.answers:
+            self.staff_text = "STAFF: (no character selected)"
+            self.character_text = ""
+            return
+
+        i = self.staff_index
+        if i >= len(self.staff_questions):
+            i = len(self.staff_questions) - 1
+
+        # staff line
+        self.staff_text = f"STAFF: {self.staff_questions[i]}"
+
+        # character answer
+        answer_list = self.answers[self.current_character]
+        answer = answer_list[i] if i < len(answer_list) else "…"
+        display_name = self.display_names.get(self.current_character, self.current_character)
+        self.character_text = f"{display_name}: {answer}"
+
+        # increment
+        if self.staff_index < len(self.staff_questions) - 1:
+            self.staff_index += 1
+
+    
     def draw(self, screen):
-        
-        if self.dialogue_text:
-            pygame.draw.rect(screen, (0, 0, 0), (0, 570, 800, 70))
-            text_surface = self.font.render(self.dialogue_text, True, (255, 255, 255))
-            screen.blit(text_surface, (30, 590))
+
+        if not self.staff_text and not self.character_text:
+            return
+
+        width, height = screen.get_size()
+
+        # CHARACTER BUBBLE — starts at (33, 509)
+        if self.character_text:
+            # CHARACTER bubble
+            char_rect = pygame.Rect(33, 510, width // 2 - 100, 60)
+            pygame.draw.rect(screen, (60, 40, 40), char_rect)
+            pygame.draw.rect(screen, (220, 180, 180), char_rect, 2)
+            surface = self.font.render(self.character_text, True, (255, 235, 235))
+            screen.blit(surface, (char_rect.x + 10, char_rect.y + 10))
+
+        # STAFF BUBBLE — starts at (527, 553)
+        if self.staff_text:
+            staff_rect = pygame.Rect(527, 553, width//2 - 60, 70)
+            pygame.draw.rect(screen, (40, 40, 70), staff_rect)
+            pygame.draw.rect(screen, (200, 200, 220), staff_rect, 2)
+            surface = self.font.render(self.staff_text, True, (235, 235, 250))
+            screen.blit(surface, (staff_rect.x + 10, staff_rect.y + 10))

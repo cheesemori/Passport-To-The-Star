@@ -1,6 +1,8 @@
 import pygame
 import sys
 import random
+from MicButton import MicButton
+from DialogueManager import DialogueManager
 
 pygame.init()
 
@@ -56,6 +58,12 @@ character_3 = Image('image/character_3.png', (500, 500), 255, show=False)
 
 character_list = [character_1, character_2, character_3]
 
+CHARACTER_DIALOGUE_MAP = {
+    0: "CaptainDarrow",
+    1: "JacksonB",
+    2: "Karea"
+}
+
 passport_details_1 = Image('image/passport_details_1.png', (420, 280), 255, show=False)
 passport_details_2 = Image('image/passport_details_2.png', (420, 280), 255, show=False)
 passport_details_3 = Image('image/passport_details_3.png', (420, 280), 255, show=False)
@@ -81,6 +89,10 @@ stamp_2 = Image('image/stamp.png',(80,80),255)
 accept = Image('image/accept.png',(270,270),255, show=False)
 # rejected Image
 reject = Image('image/reject.png',(270,270),255, show=False)
+# mic Image
+mic_button = MicButton("image/mic.png", (54, 646))
+dialogue_manager = DialogueManager()
+
 # states
 mouse_clicked = False
 splash_state = "fade_in"
@@ -220,6 +232,8 @@ def new_round(last_index):
     current_weight = random.randint(50, 90)
     selected_character_index = character_index
 
+    dialogue_manager.set_character(CHARACTER_DIALOGUE_MAP[character_index])
+
     # reset guard state
     guard_active = False
     guard_fading = False
@@ -241,9 +255,10 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_clicked = True
+            if mic_button.is_clicked(event.pos):
+                dialogue_manager.ask_next()
             print(f"mouse position: {event.pos}")
 
             # next / detain clicks in main game
@@ -251,6 +266,7 @@ while running:
                 # NEXT: always allowed, this is what spawns the character
                 if mouse_in_next_button(event.pos[0], event.pos[1]):
                     go_next_round = True
+                    dialogue_manager.reset_dialogue()
 
                 # DETAIN: only if a character is actually present
                 elif mouse_in_detain_button(event.pos[0], event.pos[1]) and any_character_showing():
@@ -486,6 +502,8 @@ while running:
             elif reject.show:
                 screen.blit(reject.image, reject.image.get_rect(center=(767, 132)))
 
+            mic_button.draw(screen)
+            dialogue_manager.draw(screen)
 
 
     if mouse_clicked:
