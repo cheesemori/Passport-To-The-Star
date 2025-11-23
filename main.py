@@ -77,11 +77,10 @@ guard = Image('image/guard.png', (500, 500), 255, show=False)
 stamp_1 = Image('image/stamp.png',(80,80),255)
 stamp_2 = Image('image/stamp.png',(80,80),255)
 
-# accept image
-accept = Image('image/accept.png',(287,159),255, show=False)
-# deny image
-deny = Image('image/deny.png',(271,159),255, show=False)
-
+# accepted Image
+accept = Image('image/accept.png',(270,270),255, show=False)
+# rejected Image
+reject = Image('image/reject.png',(270,270),255, show=False)
 # states
 mouse_clicked = False
 splash_state = "fade_in"
@@ -110,7 +109,7 @@ start_button_range = ((131.25, 582.5), (293.75, 667.5))
 quit_button_range = ((131.25, 695), (285, 780))
 passport_range = ((302, 570), (396, 711))
 accept_stamp_range = ((580,690),(630,740))
-deny_stamp_range = ((685,690),(735,740))
+reject_stamp_range = ((685,690),(735,740))
 entry_permit_range = ((125,568),(225,712))
 # next button rectangle (bottom right)
 next_button_range = ((800, 650), (1000, 730))
@@ -175,9 +174,9 @@ def mouse_in_accept_stamp(x, y):
     return accept_stamp_range[0][0] <= x <= accept_stamp_range[1][0] and \
            accept_stamp_range[0][1] <= y <= accept_stamp_range[1][1]
 
-def mouse_in_deny_stamp(x, y):
-    return deny_stamp_range[0][0] <= x <= deny_stamp_range[1][0] and \
-           deny_stamp_range[0][1] <= y <= deny_stamp_range[1][1]
+def mouse_in_reject_stamp(x, y):
+    return reject_stamp_range[0][0] <= x <= reject_stamp_range[1][0] and \
+           reject_stamp_range[0][1] <= y <= reject_stamp_range[1][1]
 
 def mouse_in_entry_permit(x, y):
     return entry_permit_range[0][0] <= x <= entry_permit_range[1][0] and \
@@ -192,7 +191,7 @@ def new_round(last_index):
     global guard_active, guard_fading, guard_pos_x
 
     accept.show = False
-    deny.show = False
+    reject.show = False
 
     # hide all passports and characters
     for p in passport_list:
@@ -469,23 +468,23 @@ while running:
                     entry_permit_list[selected_character_index].image.get_rect(center=(720, 381))
                 )
 
-            if mouse_in_accept_stamp(mouse_x, mouse_y) and mouse_clicked and character_list[selected_character_index].show and not deny.show:
+            if mouse_in_accept_stamp(mouse_x, mouse_y) and mouse_clicked and character_list[selected_character_index].show and not reject.show:
                 accept.show = True
-            if mouse_in_deny_stamp(mouse_x, mouse_y)and mouse_clicked and character_list[selected_character_index].show and not accept.show:
-                deny.show = True
+            if mouse_in_reject_stamp(mouse_x, mouse_y)and mouse_clicked and character_list[selected_character_index].show and not accept.show:
+                reject.show = True
 
             screen.blit(stamp_1.image, stamp_1.image.get_rect(center=(605, 715)))
             accept_text = pixel_font_resize(20).render("Accept", True, (184,223,106))
             screen.blit(accept_text, accept_text.get_rect(center=(605, 755)))
 
             screen.blit(stamp_2.image, stamp_2.image.get_rect(center=(710, 715)))
-            accept_text = pixel_font_resize(20).render("Deny", True, (191,64,147))
+            accept_text = pixel_font_resize(20).render("Reject", True, (191,64,147))
             screen.blit(accept_text, accept_text.get_rect(center=(710, 755)))
 
             if accept.show:
                 screen.blit(accept.image, accept.image.get_rect(center=(767, 132)))
-            elif deny.show:
-                screen.blit(deny.image, deny.image.get_rect(center=(767, 132)))
+            elif reject.show:
+                screen.blit(reject.image, reject.image.get_rect(center=(767, 132)))
 
 
 
