@@ -77,6 +77,12 @@ entry_permit_3 = Image('image/entry_permit_3.png',(236,344),255, show=False)
 
 entry_permit_list = [entry_permit_1,entry_permit_2,entry_permit_3]
 
+xray_1 = Image('image/character_1_xray.jpg',(512,768),255, show=False)
+xray_2 = Image('image/character_2_xray.jpg',(512,768),255, show=False)
+xray_3 = Image('image/character_3_xray.jpg',(512,768),255, show=False)
+
+xray_list = [xray_1,xray_2,xray_3]
+
 tutorial = Image('image/tutorial.png', (984, 660), 255, show=False)
 # guard image
 guard = Image('image/guard.png', (500, 500), 255, show=False)
@@ -228,9 +234,11 @@ def new_round(last_index):
     passport_list[passport_index].show = True
     character_list[character_index].show = True
 
+
+
     # generate random weight for this character
-    current_weight = random.randint(50, 90)
     selected_character_index = character_index
+    current_weight = character_weight()
 
     dialogue_manager.set_character(CHARACTER_DIALOGUE_MAP[character_index])
 
@@ -245,6 +253,11 @@ def new_round(last_index):
         d.show = False
 
     return character_index
+
+
+def character_weight():
+    character_weight_dict = {0:"70",1:"13",2:"27"}
+    return character_weight_dict[selected_character_index]
 
 
 running = True
@@ -416,8 +429,8 @@ while running:
 
             # draw weight label
             if current_weight is not None:
-                weight_text = pixel_font.render(f"{current_weight} kg", True, (0, 0, 0))
-                screen.blit(weight_text, (419, 383))
+                weight_text = pixel_font.render(f"{current_weight}kg", True, (0, 0, 0))
+                screen.blit(weight_text, weight_text.get_rect(center=(471, 413)))
 
             # draw next button
             btn_x1, btn_y1 = next_button_range[0]
