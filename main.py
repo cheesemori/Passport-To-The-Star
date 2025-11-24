@@ -538,8 +538,6 @@ while running:
                 else:
                     screen.blit(xray_list[selected_character_index].image, xray_list[selected_character_index].image.get_rect(center=(490, 182)))
 
-
-
     if mouse_clicked:
         mouse_clicked = False
 
