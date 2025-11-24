@@ -77,9 +77,10 @@ entry_permit_3 = Image('image/entry_permit_3.png',(236,344),255, show=False)
 
 entry_permit_list = [entry_permit_1,entry_permit_2,entry_permit_3]
 
-xray_1 = Image('image/character_1_xray.jpg',(512,768),255, show=False)
-xray_2 = Image('image/character_2_xray.jpg',(512,768),255, show=False)
-xray_3 = Image('image/character_3_xray.jpg',(512,768),255, show=False)
+xray_1 = Image('image/character_1_xray.jpg',(256,384),255)
+xray_2 = Image('image/character_2_xray.jpg',(256,384),255)
+xray_3 = Image('image/character_3_xray.jpg',(256,384),255)
+xray_background = Image('image/xray_background.png',(256,384),255)
 
 xray_list = [xray_1,xray_2,xray_3]
 
@@ -99,6 +100,9 @@ reject = Image('image/reject.png',(270,270),255, show=False)
 mic_button = MicButton("image/mic.png", (30, 630))
 dialogue_manager = DialogueManager()
 
+# xray button
+xray_button = Image('image/xray_button.png', (115,53.5),255, show=False)
+
 # states
 mouse_clicked = False
 splash_state = "fade_in"
@@ -110,7 +114,7 @@ button_pressed = ""
 # big change: do NOT start with a character; wait for NEXT click
 go_next_round = False          # was True before
 last_character_index = None
-selected_character_index = 0
+selected_character_index = -1
 
 # will store the current character weight
 current_weight = None
@@ -129,6 +133,10 @@ passport_range = ((302, 570), (396, 711))
 accept_stamp_range = ((580,690),(630,740))
 reject_stamp_range = ((685,690),(735,740))
 entry_permit_range = ((125,568),(225,712))
+xray_button_range = ((410,658),(525,712))
+
+# (468, 685) (115,53.5)
+
 # next button rectangle (bottom right)
 next_button_range = ((800, 650), (1000, 730))
 
@@ -199,6 +207,10 @@ def mouse_in_reject_stamp(x, y):
 def mouse_in_entry_permit(x, y):
     return entry_permit_range[0][0] <= x <= entry_permit_range[1][0] and \
            entry_permit_range[0][1] <= y <= entry_permit_range[1][1]
+
+def mouse_in_xray_button(x, y):
+    return xray_button_range[0][0] <= x <= xray_button_range[1][0] and \
+           xray_button_range[0][1] <= y <= xray_button_range[1][1]
 
 def any_character_showing():
     return any(c.show for c in character_list)
@@ -515,8 +527,17 @@ while running:
             elif reject.show:
                 screen.blit(reject.image, reject.image.get_rect(center=(767, 132)))
 
+            screen.blit(xray_button.image, xray_button.image.get_rect(center=(468, 685)))
+
             mic_button.draw(screen)
             dialogue_manager.draw(screen)
+
+            if mouse_in_xray_button(mouse_x,mouse_y) and pygame.mouse.get_pressed()[0]:
+                if selected_character_index == -1:
+                    screen.blit(xray_background.image, xray_background.image.get_rect(center=(490, 182)))
+                else:
+                    screen.blit(xray_list[selected_character_index].image, xray_list[selected_character_index].image.get_rect(center=(490, 182)))
+
 
 
     if mouse_clicked:
