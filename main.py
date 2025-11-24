@@ -11,7 +11,7 @@ screen_size = (1000, 800)
 screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption(f'Passport To The Star {game_version}')
 
-dev = True
+dev = False
 
 class Image:
     def __init__(self, path: str, size: tuple[float, float], alpha: int = 0, show: bool = True):
